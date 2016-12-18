@@ -66,12 +66,14 @@ file(GLOB ${PROJECT_NAME}_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cpp")
 
 set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 
-if(MSVC AND NOT MSVC_SHARED_RT)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-    include(FindStaticOpenSSL)
-else()
-    find_package(OpenSSL REQUIRED)
-endif()
+# if(MSVC AND NOT MSVC_SHARED_RT)
+ #   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+ #   include(FindStaticOpenSSL)
+#else()
+#    find_package(OpenSSL REQUIRED)
+#endif()
+
+find_package(OpenSSL REQUIRED)
 
 find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
