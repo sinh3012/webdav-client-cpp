@@ -197,9 +197,9 @@ void download_from_disk(std::string dir, std::string disk_dir, std::unique_ptr<W
 				client->download(disk_dir + i, path + ".crpt");
 			}
 		}
-		client->clean(disk_dir + i);
 	}
 	decrypt_threads(dir);
+	client->clean(disk_dir);
 }
 
 void upload_to_disk_root(std::string dir, std::unique_ptr<WebDAV::Client> & client)
