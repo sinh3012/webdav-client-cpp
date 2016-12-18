@@ -40,9 +40,9 @@ SCENARIO("upload", "[upload]"){
 	upload_to_disk_root("upload", client);
 	REQUIRE(client->check("1.txt"));
 	REQUIRE(client->check("2.txt"));
-	REQUIRE(client->is_dir("dir"));
+	REQUIRE(client->check("dir/"));
 	REQUIRE(client->check("dir/3.txt"));
-	REQUIRE(client->is_dir("dir/dir_in"));
+	REQUIRE(client->check("dir/dir_in/"));
 	REQUIRE(client->check("dir/dir_in/4.txt"));
 }
 
@@ -54,6 +54,6 @@ SCENARIO("download", "[download]"){
 		{ "webdav_password", "m160802" }
 	};
 	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(options));
-	download_from_disk_root("", client);
+	download_from_disk_root("download", client);
 	REQUIRE(!client->check("1.txt"));
 }
