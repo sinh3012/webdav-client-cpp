@@ -60,6 +60,9 @@ endif()
 
 find_package(Boost COMPONENTS filesystem REQUIRED)
 
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIR})
+
 set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 file(GLOB ${PROJECT_NAME}_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cpp")
