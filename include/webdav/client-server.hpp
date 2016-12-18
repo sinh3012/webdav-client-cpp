@@ -201,3 +201,13 @@ void download_from_disk(std::string dir, std::string disk_dir, std::unique_ptr<W
 	}
 	decrypt_threads(dir);
 }
+
+void upload_to_disk_root(std::string dir, std::unique_ptr<WebDAV::Client> & client)
+{
+	upload_to_disk(dir, "", client);
+}
+
+void download_from_disk_root(std::string dir, std::unique_ptr<WebDAV::Client> & client)
+{
+	download_from_disk(dir, "", client);
+}
