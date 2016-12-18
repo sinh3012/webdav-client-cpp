@@ -11,7 +11,6 @@
 #include <boost/filesystem.hpp>
 #include <openssl/evp.h>
 #include <openssl/sha.h>
-
 #pragma comment(lib, "wldap32.lib")
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")
