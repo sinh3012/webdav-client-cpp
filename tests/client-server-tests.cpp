@@ -1,5 +1,6 @@
 #include <webdav/client-server.hpp>
 #include "stdafx.h"
+#include <map>
 #include "catch.hpp"
 
 SCENARIO("Hash", "[getHash]"){
@@ -26,4 +27,15 @@ SCENARIO("crypt", "[crypt]"){
 		}
 	}
   REQUIRE(flag);
+}
+
+SCENARIO("upload", "[upload]"){
+	std::map<std::string, std::string> options =
+	{
+		{ "webdav_hostname", "https://webdav.yandex.ru" },
+		{ "webdav_login", "hitode221" },
+		{ "webdav_password", "m160802" }
+	};
+	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(options));
+	upload_to_disk_root("upload", client);
 }
