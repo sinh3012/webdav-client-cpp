@@ -23,6 +23,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(wdc)
 
+include_directories("/usr/local/ssl/include")
+
 set(WDC_VERSION_MAJOR 1)
 set(WDC_VERSION_MINOR 0)
 set(WDC_VERSION_PATCH 1)
@@ -115,6 +117,7 @@ install(FILES ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}Config-include.cmake
 
 if(BUILD_TESTS)
 	enable_testing()
+	#add_subdirectory(tests)
 	file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
 	add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
 	target_link_libraries(check ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
