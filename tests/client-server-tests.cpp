@@ -1,4 +1,6 @@
 #include <webdav/client-server.hpp>
+#include "stdafx.h"
+#include "catch.hpp"
 
 SCENARIO("Hash", "[getHash]"){
   getHash("testfile.txt");
