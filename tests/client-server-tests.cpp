@@ -1,4 +1,4 @@
-#include "client-server.hpp"
+#include <webdav/client-server.hpp>
 
 SCENARIO("Hash", "[getHash]"){
   getHash("testfile.txt");
