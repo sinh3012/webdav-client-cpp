@@ -34,6 +34,10 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_PKGCONFIG "Build in PKGCONFIG mode" OFF)
@@ -53,6 +57,8 @@ if(MSVC AND (NOT MSVC_SHARED_RT))
         string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
     endforeach()
 endif()
+
+find_package(Boost COMPONENTS filesystem REQUIRED)
 
 set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
