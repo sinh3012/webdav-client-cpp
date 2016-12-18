@@ -38,7 +38,7 @@ static std::map<std::string, std::string> options_without_proxy =
 {
 	{ "webdav_hostname", 	"https://webdav.yandex.ru" },
 	{ "webdav_login", 	"test-hitode" },
-	{ "webdav_password", 	"hitode-221" }
+	{ "webdav_password", 	"hitode221" }
 };
 
 #ifdef WITH_PROXY
