@@ -1,7 +1,7 @@
 #include <webdav/client-server.hpp>
 #include "stdafx.h"
 #include <map>
-#include <direct.h>  
+#include <unistd.h>  
 #include "catch.hpp"
 
 SCENARIO("Hash", "[getHash]"){
