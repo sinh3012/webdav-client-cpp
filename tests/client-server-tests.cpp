@@ -57,6 +57,4 @@ SCENARIO("download", "[download]"){
 	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(options));
 	download_from_disk_root("download", client);
 	REQUIRE(!client->check("1.txt"));
-	_chdir("download");
-	REQUIRE(boost::filesystem::is_regular_file(boost::filesystem::system_complete("1.txt")));
 }
