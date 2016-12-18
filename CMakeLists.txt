@@ -24,6 +24,12 @@ cmake_minimum_required(VERSION 3.1)
 project(wdc)
 
 include_directories("/usr/local/ssl/include")
+find_package(Boost REQUIRED COMPONENTS filesystem system)
+link_directories(${Boost_LIBRARY_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
+
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
 
 set(WDC_VERSION_MAJOR 1)
 set(WDC_VERSION_MINOR 0)
@@ -33,10 +39,6 @@ set(WDC_VERSION ${WDC_VERSION_MAJOR}.${WDC_VERSION_MINOR}.${WDC_VERSION_PATCH})
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
 
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_TESTS "Build tests" OFF)
@@ -57,11 +59,6 @@ if(MSVC AND (NOT MSVC_SHARED_RT))
         string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
     endforeach()
 endif()
-
-find_package(Boost COMPONENTS filesystem REQUIRED)
-
-include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIR})
 
 set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
@@ -131,6 +128,9 @@ if(BUILD_TESTS)
 	add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
 	target_link_libraries(check ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
 	add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") 
+	add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_CURRENT_SOURCE_DIR}/fixtures $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 endif()
 
 include(CPackConfig.cmake)
