@@ -136,7 +136,7 @@ void upload_to_disk(std::string dir_name, std::string disk_dir_name, std::unique
 		else {
 			bool flag = false;
 			if (current_file.extension() != ".hash") {
-				if (client->check(disk_dir_name + "/" + current_file.leaf().string() + ".hash"))
+				if (client->check(disk_dir_name + "/" + current_file.leaf().string()))
 				{
 					client->download(disk_dir_name + "/" + current_file.leaf().string() + ".hash", current_file.string() + ".hashd");
 					flag = (hash_to_string(current_file.string() + ".hash") == hash_to_string(current_file.string() + ".hashd"));
