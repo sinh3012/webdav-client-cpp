@@ -27,10 +27,10 @@
 static std::map<std::string, std::string> options_with_proxy = 
 { 
 	{ "webdav_hostname", 	"https://webdav.yandex.ru" },
-	{ "webdav_login", 		"test-hitode" },
+	{ "webdav_login", 	"test-hitode" },
 	{ "webdav_password", 	"hitode221" },
 	{ "proxy_hostname", 	"{proxy_hostname}" },
-	{ "proxy_login", 		"{proxy_login}" },
+	{ "proxy_login", 	"{proxy_login}" },
 	{ "proxy_password", 	"{proxy_password}" }
 };
 
