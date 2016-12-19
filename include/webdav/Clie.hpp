@@ -1,6 +1,5 @@
 
 #include <webdav/client.hpp>
-#include <io.h>
 #include <memory>
 #include <string>
 #include <iostream>
