@@ -82,6 +82,7 @@ void Decrypt(std::string inn)
 	EVP_CIPHER_CTX_cleanup(&ctx);
 	fclose(in);
 	fclose(out);
+	std::cout << "DECRIPT" << std::endl
 }
 
 struct Info
@@ -240,6 +241,7 @@ void RD(std::unique_ptr<WebDAV::Client> & client, std::string dir, std::string d
 	ds.erase(ds.begin(), ds.begin() + DISKDIRLEN); //warn
 	boost::filesystem::create_directory(dir + "/" + ds);
 	auto files = client->list(disk_dir);
+	std::cout << disk_dir << std::endl;
 	for (auto i : files) {
 		if (client->is_dir(disk_dir + i)) {
 
@@ -269,6 +271,7 @@ void DfromD()
 	RD(client, inf.dir_, "path/");
 
 	DirP(inf.dir_);
+	std::cout << "DirP" << std::endl;
 	std::vector<std::string> nh;
 	std::ifstream ptf(PATHtoFILES);
 	/*boost::asio::io_service ioService;
@@ -295,6 +298,7 @@ void DfromD()
 		ptf.close();
 		std::remove(PATHtoFILES);
 	}
+	std::cout << "DECRIPTALL" << std::endl;
 	std::ifstream hist(HISTORY);
 	std::vector<std::string> oh;
 	std::string tmp;
@@ -304,6 +308,7 @@ void DfromD()
 		oh.push_back(tmp);
 	}
 	hist.close();
+	std::cout << "HistDESTR" << std::endl;
 	std::remove(HISTORY);
 	std::ofstream nhist(HISTORY);
 	bool flag;
