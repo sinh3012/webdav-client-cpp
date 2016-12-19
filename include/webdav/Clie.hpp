@@ -283,7 +283,7 @@ void DfromD()
 		while (!ptf.eof()) {
 			std::getline(ptf, path);
 			ioService.post(boost::bind(&Decrypt, path));
-			Decrypt(path);
+			//Decrypt(path);
 			std::remove(path.c_str());
 			std::string fpath(path);
 			fpath.erase(fpath.end() - 4, fpath.end());
