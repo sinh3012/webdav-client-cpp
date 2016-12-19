@@ -1,4 +1,3 @@
-
 #include <webdav/client.hpp>
 #include <memory>
 #include <string>
