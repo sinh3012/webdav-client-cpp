@@ -31,7 +31,7 @@ SCENARIO("crypt", "[crypt]"){
 }
 
 SCENARIO("upload", "[upload]"){
-	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(init_client("config.txt"))));
+	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(init_client("config.txt")));
 	upload_to_disk_root("upload", client);
 	REQUIRE(client->check("1.txt"));
 	REQUIRE(client->check("2.txt"));
@@ -42,7 +42,7 @@ SCENARIO("upload", "[upload]"){
 }
 
 SCENARIO("download", "[download]"){
-	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(init_client("config.txt"))));
+	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(init_client("config.txt")));
 	download_from_disk_root("download", client);
 	REQUIRE(!client->check("1.txt"));
 	REQUIRE(!client->check("2.txt"));
