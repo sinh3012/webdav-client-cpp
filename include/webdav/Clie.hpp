@@ -1,5 +1,6 @@
 
 #include <webdav/client.hpp>
+#include <io.h>
 #include <memory>
 #include <string>
 #include <iostream>
@@ -154,7 +155,7 @@ void DirHP(const fs::path & dir)
 			std::string hash = GenHash(fpath.c_str()); // ïîëó÷àåì õýø
 			std::cout << "Õýø - " << hash << std::endl;
 			std::ifstream history(HISTORY);	// îòêðûâàåì ôàéë ñ õýøàìè çàãðóæåííûx ôàéëîâ
-			bool flag = TRUE;
+			bool flag = 1;
 			if (!history.is_open()) {}// throw("file's hash");
 			else {
 				std::string temphash;
@@ -162,7 +163,7 @@ void DirHP(const fs::path & dir)
 				while (!history.eof()) {
 					std::getline(history, temphash);
 					if (temphash == hash) {
-						flag = FALSE;
+						flag = 0;
 						std::cout << "Ôàéë óæå çàãðóæàëñÿ" << std::endl;
 						break;
 					}
@@ -323,10 +324,10 @@ void DfromD()
 	std::ofstream nhist(HISTORY);
 	bool flag;
 	for (auto i : oh) {
-		flag = TRUE;
+		flag = 1;
 		for (auto j : nh) {
 			if (i == j) {
-				flag = FALSE;
+				flag = 0;
 				break;
 			}
 		}
