@@ -8,7 +8,7 @@
 #include <boost/filesystem.hpp>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
-#include <openssl/applink.c>
+//#include <openssl/applink.c>
 #include <openssl/md5.h>
 #include <iomanip>
 #include <sstream>
