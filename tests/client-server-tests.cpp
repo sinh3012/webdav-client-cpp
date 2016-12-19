@@ -31,13 +31,7 @@ SCENARIO("crypt", "[crypt]"){
 }
 
 SCENARIO("upload", "[upload]"){
-	std::map<std::string, std::string> options =
-	{
-		{ "webdav_hostname", "https://webdav.yandex.ru" },
-		{ "webdav_login", "hitode221" },
-		{ "webdav_password", "m160802" }
-	};
-	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(options));
+	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(init_client("config.txt"))));
 	upload_to_disk_root("upload", client);
 	REQUIRE(client->check("1.txt"));
 	REQUIRE(client->check("2.txt"));
@@ -48,13 +42,12 @@ SCENARIO("upload", "[upload]"){
 }
 
 SCENARIO("download", "[download]"){
-	 std::map<std::string, std::string> options =
-	{
-		{ "webdav_hostname", "https://webdav.yandex.ru" },
-		{ "webdav_login", "hitode221" },
-		{ "webdav_password", "m160802" }
-	};
-	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(options));
+	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(init_client("config.txt"))));
 	download_from_disk_root("download", client);
 	REQUIRE(!client->check("1.txt"));
+	REQUIRE(!client->check("2.txt"));
+	REQUIRE(!client->check("dir/"));
+	REQUIRE(!client->check("dir/3.txt"));
+	REQUIRE(!client->check("dir/dir_in/"));
+	REQUIRE(!client->check("dir/dir_in/4.txt"));
 }
