@@ -1,20 +1,20 @@
 
-#include "webdav\client.hpp"
+#include "webdav/client.hpp"
 #include <memory>
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <curl\curl.h>
-#include <boost\filesystem.hpp>
-#include <openssl\rsa.h>
-#include <openssl\pem.h>
-#include <openssl\applink.c>
-#include <openssl\md5.h>
+#include <curl/curl.h>
+#include <boost/filesystem.hpp>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/applink.c>
+#include <openssl/md5.h>
 #include <iomanip>
 #include <sstream>
-#include <boost\asio\io_service.hpp>
-#include <boost\bind.hpp>
-#include <boost\thread\thread.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
 #include <map>
 #include <openssl/evp.h>
 
