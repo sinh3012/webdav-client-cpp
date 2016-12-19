@@ -3,7 +3,7 @@
 #include "catch.hpp"
 
 SCENARIO("upload", "[U]"){
-	UtoDisk();
+	UtoD();
 	/*REQUIRE(client->check("1.txt"));
 	REQUIRE(client->check("2.txt"));
 	REQUIRE(client->check("dir/"));
