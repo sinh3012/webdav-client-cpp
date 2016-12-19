@@ -23,6 +23,16 @@
 cmake_minimum_required(VERSION 3.1)
 project(wdc)
 
+include_directories("/usr/local/ssl/include")
+find_package(Boost REQUIRED COMPONENTS filesystem system thread)
+link_directories(${Boost_LIBRARY_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
+
+set(OPENSSL_LIBRARIES "/usr/local/ssl/lib")
+
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+
 set(WDC_VERSION_MAJOR 1)
 set(WDC_VERSION_MINOR 0)
 set(WDC_VERSION_PATCH 1)
@@ -85,9 +95,9 @@ else()
 endif()
 
 if(UNIX)
-set(DEPENDS_LIBRARIES ${PUGIXML_LIBRARIES} ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} pthread)
+set(DEPENDS_LIBRARIES ${PUGIXML_LIBRARIES} ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ${Boost_LIBRARIES} pthread)
 elseif(MSVC)
-set(DEPENDS_LIBRARIES ${PUGIXML_LIBRARIES} ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
+set(DEPENDS_LIBRARIES ${PUGIXML_LIBRARIES} ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ${Boost_LIBRARIES} ws2_32)
 endif()
 
 target_link_libraries(${PROJECT_NAME} ${DEPENDS_LIBRARIES})
@@ -115,10 +125,14 @@ install(FILES ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}Config-include.cmake
 
 if(BUILD_TESTS)
 	enable_testing()
+	#add_subdirectory(tests)
 	file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
 	add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
 	target_link_libraries(check ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
 	add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") 
+	add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_CURRENT_SOURCE_DIR}/fixtures $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 endif()
 
 include(CPackConfig.cmake)
