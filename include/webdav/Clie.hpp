@@ -271,27 +271,27 @@ void DfromD()
 	DirP(inf.dir_);
 	std::vector<std::string> nh;
 	std::ifstream ptf(PATHtoFILES);
-	boost::asio::io_service ioService;
+	/*boost::asio::io_service ioService;
 	boost::thread_group threadpool;
 	boost::asio::io_service::work work(ioService);
 	for (size_t i = 0; i < 2; i++) {
 		threadpool.create_thread(boost::bind(&boost::asio::io_service::run, &ioService));
-	}
+	}*/
 	if (ptf.is_open()) {
 		std::string path;
 		std::getline(ptf, path);
 		while (!ptf.eof()) {
 			std::getline(ptf, path);
-			ioService.post(boost::bind(&Decrypt, path));
-			//Decrypt(path);
+			//ioService.post(boost::bind(&Decrypt, path));
+			Decrypt(path);
 			std::remove(path.c_str());
 			std::string fpath(path);
 			fpath.erase(fpath.end() - 4, fpath.end());
 			std::string hash = GenHash(fpath.c_str()); // Ïîëó÷àåì õýø
 			nh.push_back(hash);
 		}
-		ioService.stop();
-		threadpool.join_all();
+		//ioService.stop();
+		//threadpool.join_all();
 		ptf.close();
 		std::remove(PATHtoFILES);
 	}
