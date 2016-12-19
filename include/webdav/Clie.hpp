@@ -244,8 +244,8 @@ void RD(std::unique_ptr<WebDAV::Client> & client, std::string dir, std::string d
 	std::cout << disk_dir << std::endl;
 	for (auto i : files) {
 		if (client->is_dir(disk_dir + i)) {
-
 			RD(client, dir, disk_dir + i);
+			client->clean(disk_dir + i);
 		}
 		else {
 			std::string tmp(i);
@@ -253,6 +253,7 @@ void RD(std::unique_ptr<WebDAV::Client> & client, std::string dir, std::string d
 			tmp.erase(tmp.begin(), tmp.end() - 4);
 			if (tmp == aes) {
 				client->download(disk_dir + i, dir + "/" + ds + "/" + i);
+				client->clean(disk_dir + i);
 			}
 		}
 	}
