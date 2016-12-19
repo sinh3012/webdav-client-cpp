@@ -1,5 +1,6 @@
 #pragma once
 
+#incllude <fstream>
 #include <webdav/client.hpp>
 #include <memory>
 #include <sstream>
@@ -19,6 +20,19 @@
 
 
 #define BUFSIZE 1024
+
+std::map<std::string, std::string>  init_client(std::string config_file){
+	std::ifstream config(config_file);
+	std::string login, password;
+	config >> login >> password;
+	std::map<std::string, std::string> options =
+	{
+		{ "webdav_hostname", "https://webdav.yandex.ru" },
+		{ "webdav_login", login },
+		{ "webdav_password", password }
+	};
+	return options;
+}
 
 std::string getHash(std::string name)
 {
