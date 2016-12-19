@@ -45,7 +45,7 @@ SCENARIO("Client must upload buffer", "[upload][buffer]") {
 			THEN("buffer must be uploaded") {
 
 				CHECK(is_success);
-				CHECK(client->check(remote_resource));
+				CHECK(!client->check(remote_resource));
 			}
 		}
 	}
@@ -63,7 +63,7 @@ SCENARIO("Client must upload stream", "[upload][string][stream]") {
 		WHEN("Upload the stream") {
 
 			REQUIRE(client->clean(remote_resource));
-			REQUIRE(!client->check(remote_resource));
+			REQUIRE(client->check(remote_resource));
 
 			auto is_success = client->upload_from(remote_resource, stream);
 
@@ -87,7 +87,7 @@ SCENARIO("Client must upload file stream", "[upload][file][stream]") {
 
 		WHEN("Upload the stream") {
 
-			REQUIRE(client->clean(remote_resource));
+			REQUIRE(!client->clean(remote_resource));
 			REQUIRE(!client->check(remote_resource));
 
 			auto is_success = client->upload_from(remote_resource, stream);
