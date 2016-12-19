@@ -35,15 +35,15 @@ void Encrypt(std::string inn)
 	int outlen, inlen;
 	FILE *in = fopen(inn.c_str(), "rb"), 
 		*out = fopen(outn.c_str(), "wb");
-	unsigned char key[32] = "qwertytestqwertytestqwertytest"; // 256- битный ключ 
-	unsigned char iv[8] = "1234567"; // вектор инициализации 
+	unsigned char key[32] = "qwertytestqwertytestqwertytest"; // 256- ГЎГЁГІГ­Г»Г© ГЄГ«ГѕГ· 
+	unsigned char iv[8] = "1234567"; // ГўГҐГЄГІГ®Г° ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г Г¶ГЁГЁ 
 	unsigned char inbuf[BUFSIZE], outbuf[BUFSIZE];
 	EVP_CIPHER_CTX ctx;
 	const EVP_CIPHER * cipher;
-	EVP_CIPHER_CTX_init(&ctx);	// Обнуляем структуру контекста 
-	cipher = EVP_aes_256_cfb();	// Выбираем алгоритм шифрования 
-	EVP_EncryptInit(&ctx, cipher, key, iv);	// Инициализируем контекст алгоритма 
-	for (;;) {	// Шифруем данные 
+	EVP_CIPHER_CTX_init(&ctx);	// ГЋГЎГ­ГіГ«ГїГҐГ¬ Г±ГІГ°ГіГЄГІГіГ°Гі ГЄГ®Г­ГІГҐГЄГ±ГІГ  
+	cipher = EVP_aes_256_cfb();	// Г‚Г»ГЎГЁГ°Г ГҐГ¬ Г Г«ГЈГ®Г°ГЁГІГ¬ ГёГЁГґГ°Г®ГўГ Г­ГЁГї 
+	EVP_EncryptInit(&ctx, cipher, key, iv);	// Г€Г­ГЁГ¶ГЁГ Г«ГЁГ§ГЁГ°ГіГҐГ¬ ГЄГ®Г­ГІГҐГЄГ±ГІ Г Г«ГЈГ®Г°ГЁГІГ¬Г  
+	for (;;) {	// ГГЁГґГ°ГіГҐГ¬ Г¤Г Г­Г­Г»ГҐ 
 		inlen = fread(inbuf, 1, BUFSIZE, in);
 		if (inlen <= 0) break;
 		EVP_EncryptUpdate(&ctx, outbuf, &outlen, inbuf, inlen);
@@ -63,21 +63,21 @@ void Decrypt(std::string inn)
 	int outlen, inlen;
 	FILE *in = fopen(inn.c_str(), "rb"),
 		*out = fopen(outn.c_str(), "wb");
-	unsigned char key[32] = "qwertytestqwertytestqwertytest"; // 256- битный ключ 
-	unsigned char iv[8] = "1234567"; // вектор инициализации 
+	unsigned char key[32] = "qwertytestqwertytestqwertytest"; // 256- ГЎГЁГІГ­Г»Г© ГЄГ«ГѕГ· 
+	unsigned char iv[8] = "1234567"; // ГўГҐГЄГІГ®Г° ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г Г¶ГЁГЁ 
 	unsigned char inbuf[BUFSIZE], outbuf[BUFSIZE];
 	EVP_CIPHER_CTX ctx;
 	const EVP_CIPHER * cipher;
-	EVP_CIPHER_CTX_init(&ctx);	// Обнуляем контекст и выбираем алгоритм дешифрования
-	cipher = EVP_aes_256_cfb();	// Выбираем алгоритм шифрования 
+	EVP_CIPHER_CTX_init(&ctx);	// ГЋГЎГ­ГіГ«ГїГҐГ¬ ГЄГ®Г­ГІГҐГЄГ±ГІ ГЁ ГўГ»ГЎГЁГ°Г ГҐГ¬ Г Г«ГЈГ®Г°ГЁГІГ¬ Г¤ГҐГёГЁГґГ°Г®ГўГ Г­ГЁГї
+	cipher = EVP_aes_256_cfb();	// Г‚Г»ГЎГЁГ°Г ГҐГ¬ Г Г«ГЈГ®Г°ГЁГІГ¬ ГёГЁГґГ°Г®ГўГ Г­ГЁГї 
 	EVP_DecryptInit(&ctx, cipher, key, iv);
-	for (;;) {// Дешифруем данные 
+	for (;;) {// Г„ГҐГёГЁГґГ°ГіГҐГ¬ Г¤Г Г­Г­Г»ГҐ 
 		inlen = fread(inbuf, 1, BUFSIZE, in);
 		if (inlen <= 0) break;
 		EVP_DecryptUpdate(&ctx, outbuf, &outlen, inbuf, inlen);
 		fwrite(outbuf, 1, outlen, out);
 	}
-	EVP_DecryptFinal(&ctx, outbuf, &outlen);	// Завершаем процесс дешифрования 
+	EVP_DecryptFinal(&ctx, outbuf, &outlen);	// Г‡Г ГўГҐГ°ГёГ ГҐГ¬ ГЇГ°Г®Г¶ГҐГ±Г± Г¤ГҐГёГЁГґГ°Г®ГўГ Г­ГЁГї 
 	fwrite(outbuf, 1, outlen, out);
 	EVP_CIPHER_CTX_cleanup(&ctx);
 	fclose(in);
@@ -95,43 +95,43 @@ struct Info
 	std::string login_, password_, dir_, url_, filename_;
 };
 
-std::string GenHash(const char filename[]) // универсальная функция вычисления хэша
+std::string GenHash(const char filename[]) // ГіГ­ГЁГўГҐГ°Г±Г Г«ГјГ­Г Гї ГґГіГ­ГЄГ¶ГЁГї ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГї ГµГЅГёГ 
 {
-	EVP_MD_CTX mdctx; // Контекст для вычисления хэша
-	const EVP_MD * md; // Структура с адресами функций алгоритма
+	EVP_MD_CTX mdctx; // ГЉГ®Г­ГІГҐГЄГ±ГІ Г¤Г«Гї ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГї ГµГЅГёГ 
+	const EVP_MD * md; // Г‘ГІГ°ГіГЄГІГіГ°Г  Г± Г Г¤Г°ГҐГ±Г Г¬ГЁ ГґГіГ­ГЄГ¶ГЁГ© Г Г«ГЈГ®Г°ГЁГІГ¬Г 
 	unsigned char buf[BUFSIZEforHASH];
 	unsigned char md_value[EVP_MAX_MD_SIZE];
-	unsigned int md_len; // Размер вычисленного хэша		
+	unsigned int md_len; // ГђГ Г§Г¬ГҐГ° ГўГ»Г·ГЁГ±Г«ГҐГ­Г­Г®ГЈГ® ГµГЅГёГ 		
 	int inf = _open(filename, O_RDWR);
-	OpenSSL_add_all_digests();	// Добавляем алгоритмы хэширования во внутреннюю таблицу библиотеки
-								// Получаем адреса функций алгоритма MD5 и инициализируем контекст для вычисления хэша
-	md = EVP_get_digestbyname("md5"); // Универсальность)
+	OpenSSL_add_all_digests();	// Г„Г®ГЎГ ГўГ«ГїГҐГ¬ Г Г«ГЈГ®Г°ГЁГІГ¬Г» ГµГЅГёГЁГ°Г®ГўГ Г­ГЁГї ГўГ® ГўГ­ГіГІГ°ГҐГ­Г­ГѕГѕ ГІГ ГЎГ«ГЁГ¶Гі ГЎГЁГЎГ«ГЁГ®ГІГҐГЄГЁ
+								// ГЏГ®Г«ГіГ·Г ГҐГ¬ Г Г¤Г°ГҐГ±Г  ГґГіГ­ГЄГ¶ГЁГ© Г Г«ГЈГ®Г°ГЁГІГ¬Г  MD5 ГЁ ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§ГЁГ°ГіГҐГ¬ ГЄГ®Г­ГІГҐГЄГ±ГІ Г¤Г«Гї ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГї ГµГЅГёГ 
+	md = EVP_get_digestbyname("md5"); // Г“Г­ГЁГўГҐГ°Г±Г Г«ГјГ­Г®Г±ГІГј)
 	EVP_DigestInit(&mdctx, md);
-	for (;;) {		// Вычисляем хэш 
+	for (;;) {		// Г‚Г»Г·ГЁГ±Г«ГїГҐГ¬ ГµГЅГё 
 		int i = _read(inf, buf, BUFSIZEforHASH);
 		if (i <= 0) break;
 		EVP_DigestUpdate(&mdctx, buf, (unsigned long)i);
 	}
-	EVP_DigestFinal(&mdctx, md_value, &md_len);	// Копируем вычисленный хэш в выходной буфер. Размер хэша сохраняем в переменной md_len
-	EVP_MD_CTX_cleanup(&mdctx);	// Очищаем контекст
+	EVP_DigestFinal(&mdctx, md_value, &md_len);	// ГЉГ®ГЇГЁГ°ГіГҐГ¬ ГўГ»Г·ГЁГ±Г«ГҐГ­Г­Г»Г© ГµГЅГё Гў ГўГ»ГµГ®Г¤Г­Г®Г© ГЎГіГґГҐГ°. ГђГ Г§Г¬ГҐГ° ГµГЅГёГ  Г±Г®ГµГ°Г Г­ГїГҐГ¬ Гў ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г© md_len
+	EVP_MD_CTX_cleanup(&mdctx);	// ГЋГ·ГЁГ№Г ГҐГ¬ ГЄГ®Г­ГІГҐГЄГ±ГІ
 	_close(inf);
 	//for (unsigned int  i = 0; i < md_len; i++) printf("%02x", md_value[i]);
 	std::stringstream hash("");
 	for (unsigned int i = 0; i < md_len; i++) hash << std::setfill('0') << std::setw(2) << std::hex << std::uppercase << (md_value[i] & 0xFF);
 	return hash.str();
 
-	/*MD5_CTX c; // контекст хэша
+	/*MD5_CTX c; // ГЄГ®Г­ГІГҐГЄГ±ГІ ГµГЅГёГ 
 	unsigned char buf[BUFSIZEforHASH];
 	unsigned char md_buf[MD5_DIGEST_LENGTH];
 	int f = _open("a1.txt", O_RDWR);
-	MD5_Init(&c);	// Инициализируем контекст
-	for (;;) {	// Вычисляем хэш
+	MD5_Init(&c);	// Г€Г­ГЁГ¶ГЁГ Г«ГЁГ§ГЁГ°ГіГҐГ¬ ГЄГ®Г­ГІГҐГЄГ±ГІ
+	for (;;) {	// Г‚Г»Г·ГЁГ±Г«ГїГҐГ¬ ГµГЅГё
 	int i = _read(f, buf, BUFSIZEforHASH);
 	if (i <= 0) break;
 	MD5_Update(&c, buf, (unsigned long)i);
 	}
-	MD5_Final(md_buf, &c);	// Помещаем вычисленный хэш в буфер md_buf
-	// Отображаем результат
+	MD5_Final(md_buf, &c);	// ГЏГ®Г¬ГҐГ№Г ГҐГ¬ ГўГ»Г·ГЁГ±Г«ГҐГ­Г­Г»Г© ГµГЅГё Гў ГЎГіГґГҐГ° md_buf
+	// ГЋГІГ®ГЎГ°Г Г¦Г ГҐГ¬ Г°ГҐГ§ГіГ«ГјГІГ ГІ
 	for (auto i = 0; i < MD5_DIGEST_LENGTH; i++) printf("%02x", md_buf[i]);
 	*/
 }
@@ -149,11 +149,11 @@ void DirHP(const fs::path & dir)
 			
 		}
 		else if (it->path().extension() != ".aes") {
-			std::cout << "Обрабатывается файл - " << *it << std::endl;
+			std::cout << "ГЋГЎГ°Г ГЎГ ГІГ»ГўГ ГҐГІГ±Гї ГґГ Г©Г« - " << *it << std::endl;
 			std::string fpath = it->path().generic_string();
-			std::string hash = GenHash(fpath.c_str()); // получаем хэш
-			std::cout << "Хэш - " << hash << std::endl;
-			std::ifstream history(HISTORY);	// открываем файл с хэшами загруженныx файлов
+			std::string hash = GenHash(fpath.c_str()); // ГЇГ®Г«ГіГ·Г ГҐГ¬ ГµГЅГё
+			std::cout << "Г•ГЅГё - " << hash << std::endl;
+			std::ifstream history(HISTORY);	// Г®ГІГЄГ°Г»ГўГ ГҐГ¬ ГґГ Г©Г« Г± ГµГЅГёГ Г¬ГЁ Г§Г ГЈГ°ГіГ¦ГҐГ­Г­Г»x ГґГ Г©Г«Г®Гў
 			bool flag = TRUE;
 			if (!history.is_open()) {}// throw("file's hash");
 			else {
@@ -163,7 +163,7 @@ void DirHP(const fs::path & dir)
 					std::getline(history, temphash);
 					if (temphash == hash) {
 						flag = FALSE;
-						std::cout << "Файл уже загружался" << std::endl;
+						std::cout << "Г”Г Г©Г« ГіГ¦ГҐ Г§Г ГЈГ°ГіГ¦Г Г«Г±Гї" << std::endl;
 						break;
 					}
 				}
@@ -189,7 +189,7 @@ void DirP(const fs::path & dir)
 			DirP(*it);
 		}
 		else if (it->path().extension() == ".aes") {
-			std::cout << "Обрабатывается файл - " << *it << std::endl;
+			std::cout << "ГЋГЎГ°Г ГЎГ ГІГ»ГўГ ГҐГІГ±Гї ГґГ Г©Г« - " << *it << std::endl;
 			std::string fpath = it->path().generic_string();
 			std::ofstream ptf(PATHtoFILES, std::ios_base::app);
 			ptf << std::endl << fpath;
@@ -249,31 +249,6 @@ void UtoD(std::string disk_dir = "/path")
 	}
 }
 
-
-
-/*void decrypt_threads(std::string dir_name)
-{
-boost::asio::io_service ioService;
-boost::thread_group threadpool;
-boost::asio::io_service::work work(ioService);
-for (size_t i = 0; i < 2; i++) {
-threadpool.create_thread(boost::bind(&boost::asio::io_service::run, &ioService));
-}
-for (boost::filesystem::recursive_directory_iterator it(dir_name), end; it != end; ++it) {
-auto current_file = it->path();
-if (!is_directory(current_file))
-{
-if (current_file.extension() == ".crpt") {
-auto new_name(current_file.string().substr(0, current_file.string().find(".crpt")));
-ioService.post(boost::bind(decryptfile, new_name));
-}
-}
-}
-ioService.stop();
-threadpool.join_all();
-}*/
-
-
 void RD(std::unique_ptr<WebDAV::Client> & client, std::string dir, std::string disk_dir)
 {
 	std::string ds(disk_dir);
@@ -327,7 +302,7 @@ void DfromD()
 			std::remove(path.c_str());
 			std::string fpath(path);
 			fpath.erase(fpath.end() - 4, fpath.end());
-			std::string hash = GenHash(fpath.c_str()); // Получаем хэш
+			std::string hash = GenHash(fpath.c_str()); // ГЏГ®Г«ГіГ·Г ГҐГ¬ ГµГЅГё
 			nh.push_back(hash);
 		}
 		ioService.stop();
@@ -359,100 +334,14 @@ void DfromD()
 	}
 	nhist.close();
 }
-
+/*
 int main() {
 	setlocale(LC_ALL, "Russian");
 	int n;
-	std::cout << "1 - Отправка на Яндекс Диск" << std::endl << "2 - Загрузка с Яндекс Диска" << std::endl;
+	std::cout << "1 - ГЋГІГЇГ°Г ГўГЄГ  Г­Г  ГџГ­Г¤ГҐГЄГ± Г„ГЁГ±ГЄ" << std::endl << "2 - Г‡Г ГЈГ°ГіГ§ГЄГ  Г± ГџГ­Г¤ГҐГЄГ± Г„ГЁГ±ГЄГ " << std::endl;
 	std::cin >> n;
 	if (n==1) UtoD();
 	else if (n==2) DfromD();
 	system("pause");
 	return 0;
-}
-
-/*
-#define PRIVAT "privat.key"
-#define PUBLIC "public.key"
-#define SECRET_WORD "secret"
-void GenKeys(char secret[]) {
-RSA * rsa = NULL;	// указатель на структуру для хранения ключей
-unsigned long bits = KEY_LENGHT;
-FILE * privKey_file = NULL, *pubKey_file = NULL;
-const EVP_CIPHER *cipher = NULL;	// контекст алгоритма шифрования
-privKey_file = fopen(PRIVAT, "wb");
-pubKey_file = fopen(PUBLIC, "wb");
-rsa = RSA_generate_key(bits, RSA_F4, NULL, NULL);
-cipher = EVP_get_cipherbyname("bf-ofb");	// Формируем контекст алгоритма шифрования
-PEM_write_RSAPrivateKey(privKey_file, rsa, cipher, NULL, 0, NULL, secret);
-PEM_write_RSAPublicKey(pubKey_file, rsa);
-RSA_free(rsa);
-fclose(privKey_file);
-fclose(pubKey_file);
-std::cout << "Ключи сгенерированы" << std::endl;
-}
-
-void Encrypt(std::string inname) {
-
-// Cтруктура для хранения открытого ключа
-RSA * pubKey = NULL;
-FILE * pubKey_file = NULL;
-unsigned char *ctext, *ptext;
-int inlen, outlen;
-// Считываем открытый ключ
-pubKey_file = fopen(PUBLIC, "rb");
-pubKey = PEM_read_RSAPublicKey(pubKey_file, NULL, NULL, NULL);
-fclose(pubKey_file);
-int key_size = RSA_size(pubKey);	// Определяем длину ключа
-ctext = (unsigned char *)malloc(key_size);
-ptext = (unsigned char *)malloc(key_size);
-OpenSSL_add_all_algorithms();
-std::string outname = inname + ".rsa";
-int out = _open(outname.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0600);
-int in = _open(inname.c_str(), O_RDWR);
-while (TRUE) {		// Шифруем содержимое входного файла
-inlen = _read(in, ptext, key_size - 11);
-if (inlen <= 0) break;
-outlen = RSA_public_encrypt(inlen, ptext, ctext, pubKey, RSA_PKCS1_PADDING);
-if (outlen != RSA_size(pubKey)) exit(-1);
-_write(out, ctext, outlen);
-}
-free(ctext);
-free(ptext);
-RSA_free(pubKey);
-_close(out);
-_close(in);
-std::cout << "Содержимое файла " << inname << " было зашифровано" << std::endl;
-}
-
-void Decrypt(std::string inname, char secret[] = SECRET_WORD) {
-RSA * privKey = NULL;
-FILE * privKey_file;
-unsigned char *ptext, *ctext;
-int inlen, outlen;
-OpenSSL_add_all_algorithms();
-privKey_file = fopen(PRIVAT, "rb");
-privKey = PEM_read_RSAPrivateKey(privKey_file, NULL, NULL, secret);
-int key_size = RSA_size(privKey); // Определяем длину ключа
-ptext = (unsigned char *)malloc(key_size);
-ctext = (unsigned char *)malloc(key_size);
-std::string outname(inname);
-outname.erase(outname.end() - 4, outname.end());
-int out = _open(outname.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0600);
-int in = _open(inname.c_str(), O_RDWR);
-while (1) {	// Дешифруем файл
-inlen = _read(in, ctext, key_size);
-if (inlen <= 0) break;
-outlen = RSA_private_decrypt(inlen, ctext, ptext, privKey, RSA_PKCS1_PADDING);
-if (outlen < 0) exit(0);
-_write(out, ptext, outlen);
-}
-free(ctext);
-free(ptext);
-RSA_free(privKey);
-_close(in);
-_close(out);
-std::cout << "Содержимое файла " << inname << " было дешифровано" << std::endl;
-
-}
-*/
+}*/
