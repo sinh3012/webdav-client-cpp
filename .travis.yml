@@ -8,50 +8,55 @@ addons:
             - ccache
             - clang-3.6
             - gcc-5
+            - libboost-dev
         sources:
             - llvm-toolchain-trusty-3.6
             - ubuntu-toolchain-r-test
+            - libboost1.61-all-dev
 
 matrix:
     include:
-        - os: linux
-          compiler: gcc-5
-          env: BUILD_FROM_SOURCES="yes" COMPILER="g++-5" BUILD_TESTS="TRUE"
-        - os: linux
-          compiler: clang-3.6
-          env: BUILD_FROM_SOURCES="yes" COMPILER="clang++-3.6" BUILD_TESTS="TRUE"
-        - os: osx
-          compiler: gcc-5
-          env: BUILD_FROM_SOURCES="yes" COMPILER="g++-5" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/ssl"
-        - os: osx
-          compiler: clang-3.6
-          env: BUILD_FROM_SOURCES="yes" COMPILER="clang++-3.6" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/ssl"
         - os: linux
           compiler: gcc-5
           env: BUILD_FROM_SOURCES="no" COMPILER="g++-5" BUILD_TESTS="TRUE"
         - os: linux
           compiler: clang-3.6
           env: BUILD_FROM_SOURCES="no" COMPILER="clang++-3.6" BUILD_TESTS="TRUE"
-        - os: osx
-          compiler: gcc-5
-          env: BUILD_FROM_SOURCES="no" COMPILER="clang++-3.6" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/opt/openssl"
-        - os: osx
-          compiler: clang-3.6
-          env: BUILD_FROM_SOURCES="no" COMPILER="g++-5" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/opt/openssl"
+        #- os: osx
+        #  compiler: gcc-5
+        #  env: BUILD_FROM_SOURCES="no" COMPILER="clang++-3.6" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/opt/openssl"
+        #- os: osx
+        #  compiler: clang-3.6
+        #  env: BUILD_FROM_SOURCES="no" COMPILER="g++-5" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/opt/openssl"
+          
+before_install:
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CFLAGS="-I/usr/local/opt/openssl/include $CFLAGS" LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y nmap; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew link --force openssl; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install nmap; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CFLAGS="-I/usr/local/opt/openssl/include $CFLAGS" LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"; fi'
 
 script:
 - mkdir build && cd build
+ - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CFLAGS="-I/usr/local/ssl/include $CFLAGS" LDFLAGS="-L/usr/local/ssl/lib $LDFLAGS"; fi'
 - if [ "$BUILD_FROM_SOURCES" == "yes" ]; then
         ../tools/build_requirements.unix.sh;
   else
+   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+   export CFLAGS="-I/usr/local/opt/openssl/include $CFLAGS" LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"; 
+   fi;
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
       sudo apt-get update;
-      sudo apt-get install libssl-dev libcurl4-openssl-dev libpugixml-dev;
+      sudo apt-get install libssl-dev libcurl4-openssl-dev libpugixml-dev libboost-all-dev;
     else
-      brew install openssl curl pugixml;
+      brew install openssl curl pugixml boost;
+      brew link --force openssl;
+      env LDFLAGS="-L$(brew --prefix openssl)/lib" CFLAGS="-I$(brew --prefix openssl)/include" pip install cryptography;
     fi;
   fi;
-- cmake .. -DBUILD_TESTS:BOOL=$BUILD_TESTS -DHOME_PUGIXML="/usr/local" && make
-
+- cmake .. -DBUILD_TESTS:BOOL=$BUILD_TESTS -DHOME_PUGIXML="/usr/local" -DGLOBAL_PROJECT_NAME=WDC && make
+- make test ARGS="-VV"
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - check
