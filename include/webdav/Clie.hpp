@@ -140,7 +140,7 @@ void DirHP(const fs::path & dir)
 			std::string hash = GenHash(fpath.c_str()); // получаем хэш
 			std::cout << "Хэш - " << hash << std::endl;
 			std::ifstream history(HISTORY);	// открываем файл с хэшами загруженныx файлов
-			bool flag = TRUE;
+			bool flag = 1;
 			if (!history.is_open()) {}
 			else {
 				std::string temphash;
@@ -148,7 +148,7 @@ void DirHP(const fs::path & dir)
 				while (!history.eof()) {
 					std::getline(history, temphash);
 					if (temphash == hash) {
-						flag = FALSE;
+						flag = 0;
 						std::cout << "Файл уже загружался" << std::endl;
 						break;
 					}
@@ -303,6 +303,14 @@ void DfromD(std::string filename = CONF) //Загрузка из диска
 	
 }
 
+void DfromManyD(int size) {
+	for (int i = 0; i < size; ++i) {
+		std::string s = "conf" + std::to_string(i + 1) + ".txt";
+		DfromD(s);
+	}
+}
+
+/*
 int main() {
 	setlocale(LC_ALL, "Russian");
 	int n;
@@ -318,4 +326,4 @@ int main() {
 	}
 	system("pause");
 	return 0;
-}
+}*/
