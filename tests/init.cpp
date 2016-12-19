@@ -22,7 +22,6 @@ SCENARIO("upload", "[U]"){
 	REQUIRE(client->check("/path/2/f2.txt.aes"));
 }
 
-/*SCENARIO("download", "[D]"){
+SCENARIO("download", "[D]"){
 	DfromD();	
 }
-*/
