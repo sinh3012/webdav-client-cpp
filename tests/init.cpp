@@ -2,7 +2,7 @@
 #include <webdav/Clie.hpp>
 #include "catch.hpp"
 
-SCENARIO("upload", "[upload]"){
+SCENARIO("upload", "[U]"){
 	UtoDisk();
 	/*REQUIRE(client->check("1.txt"));
 	REQUIRE(client->check("2.txt"));
@@ -12,6 +12,6 @@ SCENARIO("upload", "[upload]"){
 	REQUIRE(client->check("dir/dir_in/4.txt"));*/
 }
 
-SCENARIO("download", "[download]"){
+SCENARIO("download", "[D]"){
 	DfromD();	
 }
