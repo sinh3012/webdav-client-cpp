@@ -97,43 +97,28 @@ struct Info
 
 std::string GenHash(const char filename[]) // óíèâåðñàëüíàÿ ôóíêöèÿ âû÷èñëåíèÿ õýøà
 {
-	EVP_MD_CTX mdctx; // Êîíòåêñò äëÿ âû÷èñëåíèÿ õýøà
-	const EVP_MD * md; // Ñòðóêòóðà ñ àäðåñàìè ôóíêöèé àëãîðèòìà
+	EVP_MD_CTX mdctx; // Контекст для вычисления хэша
+	const EVP_MD * md; // Структура с адресами функций алгоритма
 	unsigned char buf[BUFSIZEforHASH];
 	unsigned char md_value[EVP_MAX_MD_SIZE];
-	unsigned int md_len; // Ðàçìåð âû÷èñëåííîãî õýøà		
-	int inf = _open(filename, O_RDWR);
-	OpenSSL_add_all_digests();	// Äîáàâëÿåì àëãîðèòìû õýøèðîâàíèÿ âî âíóòðåííþþ òàáëèöó áèáëèîòåêè
-								// Ïîëó÷àåì àäðåñà ôóíêöèé àëãîðèòìà MD5 è èíèöèàëèçèðóåì êîíòåêñò äëÿ âû÷èñëåíèÿ õýøà
-	md = EVP_get_digestbyname("md5"); // Óíèâåðñàëüíîñòü)
+	unsigned int md_len; // Размер вычисленного хэша		
+	FILE *inf = fopen(filename, "rb");
+	OpenSSL_add_all_digests();	// Добавляем алгоритмы хэширования во внутреннюю таблицу библиотеки
+								// Получаем адреса функций алгоритма MD5 и инициализируем контекст для вычисления хэша
+	md = EVP_get_digestbyname("md5"); // Универсальность)
 	EVP_DigestInit(&mdctx, md);
-	for (;;) {		// Âû÷èñëÿåì õýø 
-		int i = _read(inf, buf, BUFSIZEforHASH);
+	for (;;) {		// Вычисляем хэш 
+		int i = fread(buf, 1, BUFSIZEforHASH, inf);
 		if (i <= 0) break;
 		EVP_DigestUpdate(&mdctx, buf, (unsigned long)i);
 	}
-	EVP_DigestFinal(&mdctx, md_value, &md_len);	// Êîïèðóåì âû÷èñëåííûé õýø â âûõîäíîé áóôåð. Ðàçìåð õýøà ñîõðàíÿåì â ïåðåìåííîé md_len
-	EVP_MD_CTX_cleanup(&mdctx);	// Î÷èùàåì êîíòåêñò
-	_close(inf);
+	EVP_DigestFinal(&mdctx, md_value, &md_len);	// Копируем вычисленный хэш в выходной буфер. Размер хэша сохраняем в переменной md_len
+	EVP_MD_CTX_cleanup(&mdctx);	// Очищаем контекст
+	fclose(inf);
 	//for (unsigned int  i = 0; i < md_len; i++) printf("%02x", md_value[i]);
 	std::stringstream hash("");
 	for (unsigned int i = 0; i < md_len; i++) hash << std::setfill('0') << std::setw(2) << std::hex << std::uppercase << (md_value[i] & 0xFF);
 	return hash.str();
-
-	/*MD5_CTX c; // êîíòåêñò õýøà
-	unsigned char buf[BUFSIZEforHASH];
-	unsigned char md_buf[MD5_DIGEST_LENGTH];
-	int f = _open("a1.txt", O_RDWR);
-	MD5_Init(&c);	// Èíèöèàëèçèðóåì êîíòåêñò
-	for (;;) {	// Âû÷èñëÿåì õýø
-	int i = _read(f, buf, BUFSIZEforHASH);
-	if (i <= 0) break;
-	MD5_Update(&c, buf, (unsigned long)i);
-	}
-	MD5_Final(md_buf, &c);	// Ïîìåùàåì âû÷èñëåííûé õýø â áóôåð md_buf
-	// Îòîáðàæàåì ðåçóëüòàò
-	for (auto i = 0; i < MD5_DIGEST_LENGTH; i++) printf("%02x", md_buf[i]);
-	*/
 }
 
 void DirHP(const fs::path & dir)
