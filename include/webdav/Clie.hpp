@@ -15,35 +15,39 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost\asio.hpp>
+#include <boost\bind\protect.hpp>
+
 #include <map>
 #include <openssl/evp.h>
 
 #define BUFSIZE 1024
-#define DISKDIRLEN 5
-#define KEY_LENGHT 1024
+#define IV "1234567"
+#define KEY "qwertytestqwertytestqwertytest"
 #define BUFSIZEforHASH (1025*16)
 #define CONF "conf.txt"
 #define HISTORY "history.txt"
-#define NEWHIST "newhist.txt"
 #define PATHtoFILES "path.txt"
 #define DIRF "dirf.txt"
+#define DISKDIRLEN 5
+
 namespace fs = boost::filesystem;
 
-void Encrypt(std::string inn)
+void Encrypt(std::string inn) // Шифрование AES
 {
 	std::string outn = inn + ".aes";
 	int outlen, inlen;
 	FILE *in = fopen(inn.c_str(), "rb"), 
 		*out = fopen(outn.c_str(), "wb");
-	unsigned char key[32] = "qwertytestqwertytestqwertytest"; // 256- áèòíûé êëþ÷ 
-	unsigned char iv[8] = "1234567"; // âåêòîð èíèöèàëèçàöèè 
+	unsigned char key[32] = KEY; // 256 - битный ключ 
+	unsigned char iv[8] = IV; // Dектор инициализации 
 	unsigned char inbuf[BUFSIZE], outbuf[BUFSIZE];
 	EVP_CIPHER_CTX ctx;
 	const EVP_CIPHER * cipher;
-	EVP_CIPHER_CTX_init(&ctx);	// Îáíóëÿåì ñòðóêòóðó êîíòåêñòà 
-	cipher = EVP_aes_256_cfb();	// Âûáèðàåì àëãîðèòì øèôðîâàíèÿ 
-	EVP_EncryptInit(&ctx, cipher, key, iv);	// Èíèöèàëèçèðóåì êîíòåêñò àëãîðèòìà 
-	for (;;) {	// Øèôðóåì äàííûå 
+	EVP_CIPHER_CTX_init(&ctx);	// Обнуляем структуру контекста 
+	cipher = EVP_aes_256_cfb();	// Выбираем алгоритм шифрования 
+	EVP_EncryptInit(&ctx, cipher, key, iv);	// Инициализируем контекст алгоритма 
+	for (;;) {	// Шифруем данные 
 		inlen = fread(inbuf, 1, BUFSIZE, in);
 		if (inlen <= 0) break;
 		EVP_EncryptUpdate(&ctx, outbuf, &outlen, inbuf, inlen);
@@ -56,33 +60,32 @@ void Encrypt(std::string inn)
 	fclose(out);
 }
 
-void Decrypt(std::string inn)
+void Decrypt(std::string inn) // Расшифровка AES
 {
 	std::string outn(inn);
 	outn.erase(outn.end() - 4, outn.end());
 	int outlen, inlen;
 	FILE *in = fopen(inn.c_str(), "rb"),
 		*out = fopen(outn.c_str(), "wb");
-	unsigned char key[32] = "qwertytestqwertytestqwertytest"; // 256- áèòíûé êëþ÷ 
-	unsigned char iv[8] = "1234567"; // âåêòîð èíèöèàëèçàöèè 
+	unsigned char key[32] = KEY; // 256- битный ключ 
+	unsigned char iv[8] = IV; // вектор инициализации 
 	unsigned char inbuf[BUFSIZE], outbuf[BUFSIZE];
 	EVP_CIPHER_CTX ctx;
 	const EVP_CIPHER * cipher;
-	EVP_CIPHER_CTX_init(&ctx);	// Îáíóëÿåì êîíòåêñò è âûáèðàåì àëãîðèòì äåøèôðîâàíèÿ
-	cipher = EVP_aes_256_cfb();	// Âûáèðàåì àëãîðèòì øèôðîâàíèÿ 
+	EVP_CIPHER_CTX_init(&ctx);	// Обнуляем контекст и выбираем алгоритм дешифрования
+	cipher = EVP_aes_256_cfb();	// Выбираем алгоритм шифрования 
 	EVP_DecryptInit(&ctx, cipher, key, iv);
-	for (;;) {// Äåøèôðóåì äàííûå 
+	for (;;) {	// Дешифруем данные 
 		inlen = fread(inbuf, 1, BUFSIZE, in);
 		if (inlen <= 0) break;
 		EVP_DecryptUpdate(&ctx, outbuf, &outlen, inbuf, inlen);
 		fwrite(outbuf, 1, outlen, out);
 	}
-	EVP_DecryptFinal(&ctx, outbuf, &outlen);	// Çàâåðøàåì ïðîöåññ äåøèôðîâàíèÿ 
+	EVP_DecryptFinal(&ctx, outbuf, &outlen);	// Завершаем процесс дешифрования 
 	fwrite(outbuf, 1, outlen, out);
 	EVP_CIPHER_CTX_cleanup(&ctx);
 	fclose(in);
 	fclose(out);
-	std::cout << "DECRIPT" << std::endl;
 }
 
 struct Info
@@ -96,7 +99,7 @@ struct Info
 	std::string login_, password_, dir_, url_, filename_;
 };
 
-std::string GenHash(const char filename[]) // óíèâåðñàëüíàÿ ôóíêöèÿ âû÷èñëåíèÿ õýøà
+std::string GenHash(const char filename[]) // Универсальная функция вычисления хэша
 {
 	EVP_MD_CTX mdctx; // Контекст для вычисления хэша
 	const EVP_MD * md; // Структура с адресами функций алгоритма
@@ -135,21 +138,21 @@ void DirHP(const fs::path & dir)
 			
 		}
 		else if (it->path().extension() != ".aes") {
-			std::cout << "Îáðàáàòûâàåòñÿ ôàéë - " << *it << std::endl;
+			std::cout << "Обрабатывается файл - " << *it << std::endl;
 			std::string fpath = it->path().generic_string();
-			std::string hash = GenHash(fpath.c_str()); // ïîëó÷àåì õýø
-			std::cout << "Õýø - " << hash << std::endl;
-			std::ifstream history(HISTORY);	// îòêðûâàåì ôàéë ñ õýøàìè çàãðóæåííûx ôàéëîâ
-			bool flag = 1;
-			if (!history.is_open()) {}// throw("file's hash");
+			std::string hash = GenHash(fpath.c_str()); // получаем хэш
+			std::cout << "Хэш - " << hash << std::endl;
+			std::ifstream history(HISTORY);	// открываем файл с хэшами загруженныx файлов
+			bool flag = TRUE;
+			if (!history.is_open()) {}
 			else {
 				std::string temphash;
 				std::getline(history, temphash);
 				while (!history.eof()) {
 					std::getline(history, temphash);
 					if (temphash == hash) {
-						flag = 0;
-						std::cout << "Ôàéë óæå çàãðóæàëñÿ" << std::endl;
+						flag = FALSE;
+						std::cout << "Файл уже загружался" << std::endl;
 						break;
 					}
 				}
@@ -175,7 +178,7 @@ void DirP(const fs::path & dir)
 			DirP(*it);
 		}
 		else if (it->path().extension() == ".aes") {
-			std::cout << "Îáðàáàòûâàåòñÿ ôàéë - " << *it << std::endl;
+			std::cout << "Обрабатывается файл - " << *it << std::endl;
 			std::string fpath = it->path().generic_string();
 			std::ofstream ptf(PATHtoFILES, std::ios_base::app);
 			ptf << std::endl << fpath;
@@ -184,12 +187,14 @@ void DirP(const fs::path & dir)
 	}
 }
 
-void UtoD(std::string disk_dir = "/path")
+void UtoD(std::string disk_dir = "/path") // Загрузить в диск
 {
 	Info inf(CONF);
 	DirHP(inf.dir_);
+	bool flag = 0;
 	std::ifstream ptf(PATHtoFILES);
 	if (ptf.is_open()) {
+		flag = 1;
 		std::string path;
 		std::getline(ptf, path);
 		while (!ptf.eof()) {
@@ -207,7 +212,7 @@ void UtoD(std::string disk_dir = "/path")
 	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(options));
 	//client->create_directory(disk_dir);
 	std::ifstream dirf(DIRF);
-	if (dirf.is_open()) {
+	if (dirf.is_open() && flag) {
 		std::string temp;
 		std::getline(dirf, temp);
 		while (!dirf.eof()) {
@@ -238,10 +243,9 @@ void UtoD(std::string disk_dir = "/path")
 void RD(std::unique_ptr<WebDAV::Client> & client, std::string dir, std::string disk_dir)
 {
 	std::string ds(disk_dir);
-	ds.erase(ds.begin(), ds.begin() + DISKDIRLEN); //warn
+	ds.erase(ds.begin(), ds.begin() + DISKDIRLEN);
 	boost::filesystem::create_directory(dir + "/" + ds);
 	auto files = client->list(disk_dir);
-	std::cout << disk_dir << std::endl;
 	for (auto i : files) {
 		if (client->is_dir(disk_dir + i)) {
 			RD(client, dir, disk_dir + i);
@@ -259,7 +263,7 @@ void RD(std::unique_ptr<WebDAV::Client> & client, std::string dir, std::string d
 	}
 }
 
-void DfromD()
+void DfromD(std::string filename = CONF) //Загрузка из диска
 {
 	Info inf(CONF);
 	std::map<std::string, std::string> options =
@@ -272,67 +276,49 @@ void DfromD()
 	RD(client, inf.dir_, "path/");
 
 	DirP(inf.dir_);
-	std::cout << "DirP" << std::endl;
-	std::vector<std::string> nh;
+	std::vector<std::string> paths;
 	std::ifstream ptf(PATHtoFILES);
-	/*boost::asio::io_service ioService;
-	boost::thread_group threadpool;
-	boost::asio::io_service::work work(ioService);
-	for (size_t i = 0; i < 2; i++) {
-		threadpool.create_thread(boost::bind(&boost::asio::io_service::run, &ioService));
-	}*/
 	if (ptf.is_open()) {
 		std::string path;
 		std::getline(ptf, path);
 		while (!ptf.eof()) {
 			std::getline(ptf, path);
-			//ioService.post(boost::bind(&Decrypt, path));
-			Decrypt(path);
-			std::remove(path.c_str());
-			std::string fpath(path);
-			fpath.erase(fpath.end() - 4, fpath.end());
-			std::string hash = GenHash(fpath.c_str()); // Ïîëó÷àåì õýø
-			nh.push_back(hash);
+			paths.push_back(path);
 		}
-		//ioService.stop();
-		//threadpool.join_all();
 		ptf.close();
 		std::remove(PATHtoFILES);
 	}
-	std::cout << "DECRIPTALL" << std::endl;
-	std::ifstream hist(HISTORY);
-	std::vector<std::string> oh;
-	std::string tmp;
-	std::getline(hist, tmp);
-	while (!hist.eof()) {
-		std::getline(hist, tmp);
-		oh.push_back(tmp);
+	// Потоки ... заработали)
+	boost::asio::io_service ioService;
+	boost::thread_group threadpool;
+	boost::asio::io_service::work work(ioService);
+	for (size_t i = 0; i < 2; i++) {
+		threadpool.create_thread(boost::bind(&boost::asio::io_service::run, &ioService));
 	}
-	hist.close();
-	std::cout << "HistDESTR" << std::endl;
-	std::remove(HISTORY);
-	std::ofstream nhist(HISTORY);
-	bool flag;
-	for (auto i : oh) {
-		flag = 1;
-		for (auto j : nh) {
-			if (i == j) {
-				flag = 0;
-				break;
-			}
-		}
-		if (flag) nhist << std::endl << i;
+	for (auto i : paths) {
+		ioService.post(boost::bind(&Decrypt, i));
 	}
-	nhist.close();
+	ioService.stop();
+	threadpool.join_all();
+	for (auto i : paths) {
+		std::remove(i.c_str());
+	}
+	
 }
-/*
+
 int main() {
 	setlocale(LC_ALL, "Russian");
 	int n;
-	std::cout << "1 - Îòïðàâêà íà ßíäåêñ Äèñê" << std::endl << "2 - Çàãðóçêà ñ ßíäåêñ Äèñêà" << std::endl;
+	std::cout << "1 - Отправка на Яндекс Диск" << std::endl << "2 - Загрузка с Яндекс Диска" << std::endl
+		<< "3 - Загрузить файлы с нескольких аккаунтов" << std::endl;
 	std::cin >> n;
 	if (n==1) UtoD();
 	else if (n==2) DfromD();
+	else if (n == 3) {
+		std::cout << "Введите количество аккаунтов" << std::endl;
+		std::cin >> n;
+		DfromManyD(n);
+	}
 	system("pause");
 	return 0;
-}*/
+}
