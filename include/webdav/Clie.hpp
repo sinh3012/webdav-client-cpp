@@ -15,8 +15,6 @@
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/asio.hpp>
-#include <boost/bind/rotect.hpp>
-
 #include <map>
 #include <openssl/evp.h>
 
