@@ -41,4 +41,3 @@ SCENARIO("download", "[D]"){
 	REQUIRE(!client->check("/path/2/"));
 	REQUIRE(!client->check("/path/2/f2.txt.aes"));
 }
-}
