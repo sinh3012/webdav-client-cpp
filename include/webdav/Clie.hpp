@@ -82,7 +82,7 @@ void Decrypt(std::string inn)
 	EVP_CIPHER_CTX_cleanup(&ctx);
 	fclose(in);
 	fclose(out);
-	std::cout << "DECRIPT" << std::endl
+	std::cout << "DECRIPT" << std::endl;
 }
 
 struct Info
