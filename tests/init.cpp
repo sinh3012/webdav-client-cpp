@@ -1,31 +1,51 @@
 #include <webdav/server.hpp>
+#include <webdav/Clie.hpp>
 #include "catch.hpp"
 
-SCENARIO("Download", "download") {
-	std::map<std::string, std::string> options;
-	WebDAV::Server::set_options("webdav.test.travis", "webdav.test.test", options);
-	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(options));
-	boost::filesystem::create_directories("download");
-	chdir((boost::filesystem::current_path().generic_string() + "/" + "download").c_str());
-	WebDAV::Server::download("/tmp_dir/", "download", client);
-	client->clean("tmp_dir/");
-	const std::string path = "download";
-	WebDAV::Server::decrypt_and_clear(path);
-	REQUIRE(boost::filesystem::exists(boost::filesystem::system_complete("download/1.txt")));
-	REQUIRE(boost::filesystem::is_regular_file(boost::filesystem::system_complete("download/2.txt")));
-	REQUIRE(boost::filesystem::is_regular_file(boost::filesystem::system_complete("download/test/3.txt")));
-	REQUIRE(boost::filesystem::is_regular_file(boost::filesystem::system_complete("download/test/5.txt")));
-	REQUIRE(boost::filesystem::is_regular_file(boost::filesystem::system_complete("download/test/test1/3.txt")));
-	REQUIRE(boost::filesystem::is_regular_file(boost::filesystem::system_complete("download/test/test1/4.txt")));
-	REQUIRE(boost::filesystem::is_regular_file(boost::filesystem::system_complete("download/test/test2/4.txt")));
-	REQUIRE(boost::filesystem::is_regular_file(boost::filesystem::system_complete("download/test/test2/5.txt")));
+SCENARIO("Hash", "[getHash]"){
+  getHash("testfile.txt");
+  getHash("same_testfile.txt");
+  REQUIRE(hash_to_string("testfile.txt.hash") == hash_to_string("same_testfile.txt.hash"));
+}
+
+SCENARIO("crypt", "[crypt]"){
+  encrypt("testfile.txt", "en_testfile.txt");
+  decrypt("en_testfile.txt", "de_testfile.txt");
+  std::ifstream expected("testfile.txt");
+	std::ifstream output("de_testfile.txt");
+	std::string first, second;
 	
-	REQUIRE(!client->check("/tmp_dir/1.txt"));
-	REQUIRE(!client->check("/tmp_dir/2.txt"));
-	REQUIRE(!client->check("/tmp_dir/test/3.txt"));
-	REQUIRE(!client->check("/tmp_dir/test/5.txt"));
-	REQUIRE(!client->check("/tmp_dir/test/test1/3.txt"));
-	REQUIRE(!client->check("/tmp_dir/test/test1/4.txt"));
-	REQUIRE(!client->check("/tmp_dir/test/test2/4.txt"));
-	REQUIRE(!client->check("/tmp_dir/test/test2/5.txt"));
+	bool flag = true;
+
+	while (expected || output) {
+		std::getline(expected, first);
+		std::getline(output, second);
+		if (first != second) {
+			flag = false;
+			break;
+		}
+	}
+  REQUIRE(flag);
+}
+
+SCENARIO("upload", "[upload]"){
+	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(init_client("config.txt")));
+	upload_to_disk_root("upload", client);
+	REQUIRE(client->check("1.txt"));
+	REQUIRE(client->check("2.txt"));
+	REQUIRE(client->check("dir/"));
+	REQUIRE(client->check("dir/3.txt"));
+	REQUIRE(client->check("dir/dir_in/"));
+	REQUIRE(client->check("dir/dir_in/4.txt"));
+}
+
+SCENARIO("download", "[download]"){
+	std::unique_ptr<WebDAV::Client> client(WebDAV::Client::Init(init_client("config.txt")));
+	download_from_disk_root("download", client);
+	REQUIRE(!client->check("1.txt"));
+	REQUIRE(!client->check("2.txt"));
+	REQUIRE(!client->check("dir/"));
+	REQUIRE(!client->check("dir/3.txt"));
+	REQUIRE(!client->check("dir/dir_in/"));
+	REQUIRE(!client->check("dir/dir_in/4.txt"));
 }
