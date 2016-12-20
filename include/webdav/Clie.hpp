@@ -198,8 +198,8 @@ void UtoD(std::string disk_dir = "/path") // Загрузить в диск
 			std::getline(ptf, path);
 			Encrypt(path);
 		}
-		ptf.close();
 	}
+	ptf.close();
 	std::map<std::string, std::string> options =
 	{
 		{ "webdav_hostname", inf.url_.c_str() },
@@ -217,9 +217,9 @@ void UtoD(std::string disk_dir = "/path") // Загрузить в диск
 			temp.erase(0, inf.dir_.end() - inf.dir_.begin() + 1);
 			client->create_directory(disk_dir + "/" + temp);
 		}
-		dirf.close();
-		std::remove(DIRF);
 	}
+	dirf.close();
+	std::remove(DIRF);
 	std::ifstream pathf(PATHtoFILES);
 	if (pathf.is_open()) {
 		std::string temp, tempd;
@@ -232,9 +232,9 @@ void UtoD(std::string disk_dir = "/path") // Загрузить в диск
 			client->upload(disk_dir + "/" + tempd, temp);
 			std::remove(temp.c_str());
 		}
-		pathf.close();
-		std::remove(PATHtoFILES);
 	}
+	pathf.close();
+	std::remove(PATHtoFILES);
 }
 
 void RD(std::unique_ptr<WebDAV::Client> & client, std::string dir, std::string disk_dir)
@@ -282,9 +282,9 @@ void DfromD(std::string filename = CONF) //Загрузка из диска
 			std::getline(ptf, path);
 			paths.push_back(path);
 		}
-		ptf.close();
-		std::remove(PATHtoFILES);
 	}
+	ptf.close();
+	std::remove(PATHtoFILES);
 	// Потоки ... заработали)
 	boost::asio::io_service ioService;
 	boost::thread_group threadpool;
